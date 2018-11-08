@@ -8,14 +8,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 /*
-
-COMMENT BELOW HERE
-
-*/
+    COMMENT BELOW HERE
+ */
 
 /*
-    VERSION 1.0.0
-*/
+
+ */
 
 @TeleOp(name="rcDriveSystem", group="Linear Opmode")
 //@Disabled
@@ -24,49 +22,31 @@ public class rcDriveSystem extends LinearOpMode{
 
     private ElapsedTime runTime = new ElapsedTime();
 
-
     /*
-    HARDWARE MAP
-    */
+        HARDWARE MAP
+     */
 
-    private DcMotor linear;
     private DcMotor left;
     private DcMotor right;
+
+    public double speed = 0.75; // Must Be Less Than 1!!!
 
     public double encodeLeft = 0;
     public double encodeRight = 0;
 
-    public double turn = 0;
-
     public double powerLeft = 0;
     public double powerRight = 0;
     public double powerDrive = 0;
-
-    public double LX1 = 0; //Left Joystick X
-    public double LY1 = 0; //Left Joystick Y
-    public double RX1 = 0; //Right Joystick X
-    public double RY1 = 0; //Right Joystick Y
-
-    /*
-
-    CONTROLLER 2
-
-    public double LX2 = 0; //Left Joystick X
-    public double LY2 = 0; //Left Joystick Y
-    public double RX2 = 0; //Right Joystick X
-    public double RY2 = 0; //Right Joystick Y
-
-    */
+    public double powerTurn = 0;
 
     public void runOpMode() {
 
-        linear = hardwareMap.get(DcMotor.class, "linear");
         left = hardwareMap.get(DcMotor.class, "left");
         right = hardwareMap.get(DcMotor.class, "right");
 
         /*
-        INIT TELEMETRY
-        */
+            INIT TELEMETRY
+         */
 
         telemetry.addData("Status", "INIT");
         waitForStart();
@@ -75,91 +55,53 @@ public class rcDriveSystem extends LinearOpMode{
         while (opModeIsActive()) {
 
             /*
-            CONTROLLER DATA INPUTS; CONTROLLER 1
-            */
-
-            LX1 = gamepad1.left_stick_x;
-            LY1 = gamepad1.left_stick_y;
-            RX1 = gamepad1.right_stick_x;
-            RY1 = gamepad1.right_stick_y;
+                DRIVE SYSTEM
+             */
 
             /*
-            CONTROLLER DATA INPUTS; CONTROLLER 2
-            */
+                TURN
+             */
+            if (gamepad1.x == true){
+                powerTurn = speed;
+            }
 
-            //LX2 = gamepad2.left_stick_x;
-            //LY2 = gamepad2.left_stick_y;
-            //RX2 = gamepad2.right_stick_x;
-            //RY2 = gamepad2.right_stick_y;
+            if (gamepad1.b == true){
+                powerTurn = -speed;
+            }
 
-            /*
-            DRIVE SYSTEM
-            */
-
-            //CONTAINS TURNING MECHANISM AND BACK WHEEL DRIVE
-            //CONTROLS DRIVING AND MOVEMENT "REUSE IN AUTONOMOUS"
-
-            /*
-            TURNING MECHANISM
-            */
-
-
+            if (gamepad1.b == false && gamepad1.x == false){
+                powerTurn = 0;
+            }
 
             /*
-            BACK WHEEL DRIVE
-            */
+                DRIVE
+             */
 
-            powerDrive = -this.gamepad1.left_stick_y;
-            linear.setPower(powerDrive);
-
-            turn = this.gamepad1.left_stick_x;
-            left.setPower(turn * 0.1);
-            right.setPower(turn * 0.1);
+            powerDrive = -gamepad1.left_stick_y; // Y Value Is Negated
 
             /*
-            ARM SYSTEM
-            */
+                DRIVE SYSTEM COMPILER "TURN AND DRIVE"
+             */
+
+            powerLeft = powerDrive + powerTurn;
+            powerRight = powerDrive - powerTurn;
+
+            left.setPower(powerLeft * speed);
+            right.setPower(-powerRight * speed);
 
             /*
-            AUTOMATIC TURNING WRIST
-            */
+                ADD TELEMETRY DATA
+             */
 
-            /*
-            LINEAR MOTION
-            */
-
-            /*
-            ADD TELEMETRY DATA BELOW HERE
-            */
-
-            telemetry.addData("runTime : ", runTime);
-            telemetry.addData("encodeLeft : ", encodeLeft);
-            telemetry.addData("encodeRight : ", encodeRight);
-            telemetry.addData("backWheelPower", powerDrive);
-
-            /*
-            TELEMETRY UPDATE
-            */
+            telemetry.addData("Drive_Power", powerDrive);
+            telemetry.addData("Drive_Turn", powerTurn);
+            telemetry.addData("Left_Power", powerLeft);
+            telemetry.addData("Right_Power", powerRight);
 
             telemetry.update();
 
-            /*
-            STOP
-            */
-
-            if (isStopRequested()){
-
-                /*
-                STOP ALL ACTIONS
-                */
-
-                linear.setPower(0);
-
-                /*
-                RESET WHEELS TO CENTER
-                */
-
-            }
         }
+
     }
+
 }
