@@ -29,7 +29,7 @@ public class rcDriveSystem extends LinearOpMode{
     private DcMotor left;
     private DcMotor right;
 
-    public double speed = 0.75; // Must Be Less Than 1!!!
+    public double speed = 1; // Must Be Less Than 1!!!
 
     public double encodeLeft = 0;
     public double encodeRight = 0;
@@ -86,8 +86,8 @@ public class rcDriveSystem extends LinearOpMode{
             powerLeft = powerDrive + powerTurn;
             powerRight = powerDrive - powerTurn;
 
-            left.setPower(powerLeft * speed);
-            right.setPower(-powerRight * speed);
+            left.setPower(powerLeft * speed*2);
+            right.setPower(-powerRight * speed*2);
 
             /*
                 ADD TELEMETRY DATA
