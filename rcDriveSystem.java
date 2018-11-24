@@ -1,103 +1,94 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-/*
-    COMMENT BELOW HERE
- */
-
-/*
-
- */
-
-@TeleOp(name="rcDriveSystem", group="Linear Opmode")
+@TeleOp(name = "Mecanum", group = "Teleop")
 //@Disabled
+public class Holonomic_Drive extends LinearOpMode {
 
-public class rcDriveSystem extends LinearOpMode{
+    DcMotor mfr;
+    DcMotor mfl;
+    DcMotor mbl;
+    DcMotor mbr;
 
-    private ElapsedTime runTime = new ElapsedTime();
+    int buttons = 0;
+    int override;
 
-    /*
-        HARDWARE MAP
-     */
+    @Override
+    public void runOpMode(){
 
-    private DcMotor left;
-    private DcMotor right;
+        mfr = hardwareMap.dcMotor.get("mfr");
+        mfl = hardwareMap.dcMotor.get("mfl");
+        mbl = hardwareMap.dcMotor.get("mbl");
+        mbr = hardwareMap.dcMotor.get("mbr");
 
-    public double speed = 1; // Must Be Less Than 1!!!
-
-    public double encodeLeft = 0;
-    public double encodeRight = 0;
-
-    public double powerLeft = 0;
-    public double powerRight = 0;
-    public double powerDrive = 0;
-    public double powerTurn = 0;
-
-    public void runOpMode() {
-
-        left = hardwareMap.get(DcMotor.class, "left");
-        right = hardwareMap.get(DcMotor.class, "right");
-
-        /*
-            INIT TELEMETRY
-         */
-
-        telemetry.addData("Status", "INIT");
         waitForStart();
-        runTime.reset();
 
-        while (opModeIsActive()) {
+        while (opModeIsActive()){
 
-            /*
-                DRIVE SYSTEM
-             */
+            override = 0;
 
-            /*
-                TURN
-             */
-            if (gamepad1.x == true){
-                powerTurn = speed;
+            if (gamepad1.y && override == 0){
+                buttons = 1;
+                mfr.setPower(1);
+                mfl.setPower(1);
+                mbl.setPower(1);
+                mbr.setPower(1);
+                override = 1;
+            }
+            if (gamepad1.a && override == 0){
+                buttons = 2;
+                mfr.setPower(-1);
+                mfl.setPower(-1);
+                mbl.setPower(-1);
+                mbr.setPower(-1);
+                override = 1;
+            }
+            if (gamepad1.x && override == 0){
+                buttons = 3;
+                mfr.setPower(-1);
+                mfl.setPower(-1);
+                mbl.setPower(1);
+                mbr.setPower(1);
+                override = 1;
+            }
+            if (gamepad1.b && override == 0){
+                buttons = 4;
+                mfr.setPower(1);
+                mfl.setPower(1);
+                mbl.setPower(-1);
+                mbr.setPower(-1);
+                override = 1;
+            }
+            if (gamepad1.left_trigger >= 0.5 && override == 0){
+                buttons = 5;
+                mfr.setPower(1);
+                mfl.setPower(-1);
+                mbl.setPower(-1);
+                mbr.setPower(1);
+                override = 1;
+            }
+            if (gamepad1.right_trigger >= 0.5 && override == 0){
+                buttons = 6;
+                mfr.setPower(-1);
+                mfl.setPower(1);
+                mbl.setPower(1);
+                mbr.setPower(-1);
+                override = 1;
+            }
+            if (override == 0){
+                buttons = 0;
+                mfr.setPower(0);
+                mfl.setPower(0);
+                mbl.setPower(0);
+                mbr.setPower(0);
             }
 
-            if (gamepad1.b == true){
-                powerTurn = -speed;
-            }
-
-            if (gamepad1.b == false && gamepad1.x == false){
-                powerTurn = 0;
-            }
-
-            /*
-                DRIVE
-             */
-
-            powerDrive = -gamepad1.left_stick_y; // Y Value Is Negated
-
-            /*
-                DRIVE SYSTEM COMPILER "TURN AND DRIVE"
-             */
-
-            powerLeft = powerDrive + powerTurn;
-            powerRight = powerDrive - powerTurn;
-
-            left.setPower(powerLeft * speed*2);
-            right.setPower(-powerRight * speed*2);
-
-            /*
-                ADD TELEMETRY DATA
-             */
-
-            telemetry.addData("Drive_Power", powerDrive);
-            telemetry.addData("Drive_Turn", powerTurn);
-            telemetry.addData("Left_Power", powerLeft);
-            telemetry.addData("Right_Power", powerRight);
-
+            telemetry.addData("Buttons:", buttons);
+            telemetry.addData("Override:", override);
             telemetry.update();
 
         }
