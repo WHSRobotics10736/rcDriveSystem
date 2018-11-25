@@ -16,6 +16,8 @@ public class Holonomic_Drive extends LinearOpMode {
 
     int buttons = 0;
     int override;
+    double speed = 0;
+    int mode = 1;
 
     @Override
     public void runOpMode(){
@@ -31,52 +33,70 @@ public class Holonomic_Drive extends LinearOpMode {
 
             override = 0;
 
+            if (gamepad1.dpad_up)
+                mode = 1;
+            if (gamepad1.dpad_right)
+                mode = 2;
+            if (gamepad1.dpad_down)
+                mode = 3;
+            if (gamepad1.dpad_left)
+                mode = 4;
+
+            if (mode == 1)
+                speed = 1;
+            if (mode == 2)
+                speed = 0.25;
+            if (mode == 3)
+                speed = 0.1;
+            if (mode == 4)
+                speed = 0.09;
+
             if (gamepad1.y && override == 0){
                 buttons = 1;
-                mfr.setPower(1);
-                mfl.setPower(1);
-                mbl.setPower(1);
-                mbr.setPower(1);
+                mfr.setPower(-1 * speed);
+                mfl.setPower(1 * speed);
+                mbl.setPower(1 * speed);
+                mbr.setPower(-1 * speed);
                 override = 1;
             }
             if (gamepad1.a && override == 0){
                 buttons = 2;
-                mfr.setPower(-1);
-                mfl.setPower(-1);
-                mbl.setPower(-1);
-                mbr.setPower(-1);
+                mfr.setPower(1 * speed);
+                mfl.setPower(-1 * speed);
+                mbl.setPower(-1 * speed);
+                mbr.setPower(1 * speed);
                 override = 1;
             }
             if (gamepad1.x && override == 0){
                 buttons = 3;
-                mfr.setPower(-1);
-                mfl.setPower(-1);
-                mbl.setPower(1);
-                mbr.setPower(1);
+                mfr.setPower(-1 * speed);
+                mfl.setPower(-1 * speed);
+                mbl.setPower(1 * speed);
+                mbr.setPower(1 * speed);
                 override = 1;
             }
             if (gamepad1.b && override == 0){
                 buttons = 4;
-                mfr.setPower(1);
-                mfl.setPower(1);
-                mbl.setPower(-1);
-                mbr.setPower(-1);
+                mfr.setPower(1 * speed);
+                mfl.setPower(1 * speed);
+                mbl.setPower(-1 * speed);
+                mbr.setPower(-1 * speed);
                 override = 1;
             }
             if (gamepad1.left_trigger >= 0.5 && override == 0){
                 buttons = 5;
-                mfr.setPower(1);
-                mfl.setPower(-1);
-                mbl.setPower(-1);
-                mbr.setPower(1);
+                mfr.setPower(1 * speed);
+                mfl.setPower(1 * speed);
+                mbl.setPower(1 * speed);
+                mbr.setPower(1 * speed);
                 override = 1;
             }
             if (gamepad1.right_trigger >= 0.5 && override == 0){
                 buttons = 6;
-                mfr.setPower(-1);
-                mfl.setPower(1);
-                mbl.setPower(1);
-                mbr.setPower(-1);
+                mfr.setPower(-1 * speed);
+                mfl.setPower(-1 * speed);
+                mbl.setPower(-1 * speed);
+                mbr.setPower(-1 * speed);
                 override = 1;
             }
             if (override == 0){
@@ -89,6 +109,7 @@ public class Holonomic_Drive extends LinearOpMode {
 
             telemetry.addData("Buttons:", buttons);
             telemetry.addData("Override:", override);
+            telemetry.addData("Mode:", mode);
             telemetry.update();
 
         }
